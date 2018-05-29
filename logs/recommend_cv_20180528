@@ -1,0 +1,71 @@
++------+-------+------+
+|userId|movieId|rating|
++------+-------+------+
+|1     |1193   |5.0   |
+|1     |661    |3.0   |
+|1     |914    |3.0   |
+|1     |3408   |4.0   |
+|1     |2355   |5.0   |
+|1     |1197   |3.0   |
+|1     |1287   |5.0   |
+|1     |2804   |5.0   |
+|1     |594    |4.0   |
+|1     |919    |4.0   |
++------+-------+------+
+only showing top 10 rows
+
+Rating Counts: movie - 1000209, personal - 24
++---+----------------------------------+--------------------------------+
+|id |title                             |genres                          |
++---+----------------------------------+--------------------------------+
+|1  |Toy Story (1995)                  |[Animation, Children's, Comedy] |
+|2  |Jumanji (1995)                    |[Adventure, Children's, Fantasy]|
+|3  |Grumpier Old Men (1995)           |[Comedy, Romance]               |
+|4  |Waiting to Exhale (1995)          |[Comedy, Drama]                 |
+|5  |Father of the Bride Part II (1995)|[Comedy]                        |
+|6  |Heat (1995)                       |[Action, Crime, Thriller]       |
+|7  |Sabrina (1995)                    |[Comedy, Romance]               |
+|8  |Tom and Huck (1995)               |[Adventure, Children's]         |
+|9  |Sudden Death (1995)               |[Action]                        |
+|10 |GoldenEye (1995)                  |[Action, Adventure, Thriller]   |
++---+----------------------------------+--------------------------------+
+only showing top 10 rows
+
+Movie Counts: 3883
+
+{
+	als_c27c96905643-rank: 12,
+	als_c27c96905643-regParam: 0.1
+}
+The RMSE of the bestModel from CrossValidator on validation set is 0.8605
+The RMSE of the bestModel from CrossValidator on test set is 0.8593
+
+The best model from CossValidator was trained with param = {
+	als_c27c96905643-rank: 12,
+	als_c27c96905643-regParam: 0.1
+}
+The top recommendation on AllUsers filter with  user 0 from ALS model from CV
++-------+-------------------------------------------------+-------------------+------+---------+
+|movieId|title                                            |genres             |userId|rating   |
++-------+-------------------------------------------------+-------------------+------+---------+
+|572    |Foreign Student (1994)                           |[Drama]            |0     |5.846446 |
+|3233   |Smashing Time (1967)                             |[Comedy]           |0     |5.329516 |
+|527    |Schindler's List (1993)                          |[Drama, War]       |0     |5.137587 |
+|3245   |I Am Cuba (Soy Cuba/Ya Kuba) (1964)              |[Drama]            |0     |4.9890447|
+|318    |Shawshank Redemption, The (1994)                 |[Drama]            |0     |4.974785 |
+|53     |Lamerica (1994)                                  |[Drama]            |0     |4.895218 |
+|1741   |Midaq Alley (Callej�n de los milagros, El) (1995)|[Drama]            |0     |4.8848286|
+|953    |It's a Wonderful Life (1946)                     |[Drama]            |0     |4.884011 |
+|3517   |Bells, The (1926)                                |[Crime, Drama]     |0     |4.879026 |
+|2324   |Life Is Beautiful (La Vita � bella) (1997)       |[Comedy, Drama]    |0     |4.8732615|
+|1949   |Man for All Seasons, A (1966)                    |[Drama]            |0     |4.8420196|
+|1207   |To Kill a Mockingbird (1962)                     |[Drama]            |0     |4.83848  |
+|128    |Jupiter's Wife (1994)                            |[Documentary]      |0     |4.8182845|
+|904    |Rear Window (1954)                               |[Mystery, Thriller]|0     |4.7963657|
+|1851   |Leather Jacket Love Story (1997)                 |[Drama, Romance]   |0     |4.7897983|
+|1250   |Bridge on the River Kwai, The (1957)             |[Drama, War]       |0     |4.7883086|
+|1204   |Lawrence of Arabia (1962)                        |[Adventure, War]   |0     |4.779291 |
+|3350   |Raisin in the Sun, A (1961)                      |[Drama]            |0     |4.7716703|
+|3469   |Inherit the Wind (1960)                          |[Drama]            |0     |4.762243 |
+|1193   |One Flew Over the Cuckoo's Nest (1975)           |[Drama]            |0     |4.761278 |
++-------+-------------------------------------------------+-------------------+------+---------+

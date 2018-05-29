@@ -1,0 +1,40 @@
+Content Overlays counts
++---------------+-----+
+|resource_type  |count|
++---------------+-----+
+|movie_overlay  |1000 |
+|episode_overlay|1000 |
+|series_overlay |997  |
+|other_overlay  |1003 |
++---------------+-----+
+
+
+Movie Samples:
++---------+-------------+-----+---------------+----------+---------------+------------------------------+
+|rovi_id  |resource_type|mfsid|ct_numeric     |coll_tmsid|cl_numeric     |title                         |
++---------+-------------+-----+---------------+----------+---------------+------------------------------+
+|982759698|movie_overlay|51591|351843720939911|51590     |344147139545478|Pulp Fiction                  |
+|452053   |movie_overlay|51596|351843720939916|51595     |344147139545483|The Substitute 2: School's Out|
+|451171   |movie_overlay|32743|351843720921063|51607     |344147139545495|Jackie Brown                  |
+|466632   |movie_overlay|51633|351843720939953|51632     |344147139545520|Laws of Deception             |
+|458092   |movie_overlay|31674|351843720919994|51634     |344147139545522|The Players Club              |
+|463037   |movie_overlay|51639|351843720939959|51638     |344147139545526|Crazy Six                     |
+|128304   |movie_overlay|51641|351843720939961|51640     |344147139545528|Watchers Reborn               |
+|459316   |movie_overlay|35334|351843720923654|51711     |344147139545599|How to Marry a Millionaire    |
+|458884   |movie_overlay|35335|351843720923655|51712     |344147139545600|The Prince and the Showgirl   |
+|1053585  |movie_overlay|14444|351843720902764|51713     |344147139545601|Al Capone                     |
+|1068814  |movie_overlay|35337|351843720923657|51715     |344147139545603|Limelight                     |
+|1055575  |movie_overlay|35338|351843720923658|51716     |344147139545604|Charlie Chan in Panama        |
+|1069660  |movie_overlay|35339|351843720923659|51717     |344147139545605|Sullivan's Travels            |
+|428991   |movie_overlay|35340|351843720923660|51718     |344147139545606|Magnificent Obsession         |
+|1054182  |movie_overlay|35341|351843720923661|51719     |344147139545607|All That Heaven Allows        |
+|471448   |movie_overlay|14449|351843720902769|51720     |344147139545608|Pillow Talk                   |
+|1982882  |movie_overlay|35342|351843720923662|51721     |344147139545609|Murder, Inc.                  |
+|459709   |movie_overlay|35344|351843720923664|51724     |344147139545612|Point Blank                   |
+|459083   |movie_overlay|23895|351843720912215|51726     |344147139545614|Bad Day at Black Rock         |
+|1065984  |movie_overlay|14399|351843720902719|51727     |344147139545615|Pete Kelly's Blues            |
++---------+-------------+-----+---------------+----------+---------------+------------------------------+
+only showing top 20 rows
+
+Station Overlays counts: 35042
+Execution time=   1.599 seconds
