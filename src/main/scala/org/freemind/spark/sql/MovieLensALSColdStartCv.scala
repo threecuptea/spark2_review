@@ -1,10 +1,9 @@
 package org.freemind.spark.sql
 
-import org.apache.spark.ml.evaluation.RegressionEvaluator
 import org.apache.spark.ml.recommendation.ALS
-import org.apache.spark.ml.tuning.{CrossValidator, CrossValidatorModel, ParamGridBuilder}
-import org.apache.spark.sql.{Dataset, SparkSession}
-import org.apache.spark.sql.functions.{desc, explode, lit}
+import org.apache.spark.ml.tuning.CrossValidatorModel
+import org.apache.spark.sql.SparkSession
+import org.apache.spark.sql.functions.explode
 
 /**
   * CrossValidator is for ML tuning.  However, it needs some work to get the best parameter map used by the

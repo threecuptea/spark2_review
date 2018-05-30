@@ -1,10 +1,7 @@
 package org.freemind.spark.sql
 
-import org.apache.spark.ml.evaluation.RegressionEvaluator
-import org.apache.spark.ml.param.ParamMap
-import org.apache.spark.ml.recommendation.{ALS, ALSModel}
-import org.apache.spark.ml.tuning.ParamGridBuilder
-import org.apache.spark.sql.{Dataset, SparkSession}
+import org.apache.spark.ml.recommendation.ALS
+import org.apache.spark.sql.SparkSession
 import org.apache.spark.sql.functions.{desc, explode, lit}
 
 

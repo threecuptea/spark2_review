@@ -2,9 +2,7 @@ package org.freemind.spark.sql
 
 import com.mongodb.spark.MongoSpark
 import com.mongodb.spark.config.{ReadConfig, WriteConfig}
-import org.apache.spark.ml.evaluation.RegressionEvaluator
 import org.apache.spark.ml.recommendation.ALS
-import org.apache.spark.ml.tuning.ParamGridBuilder
 import org.apache.spark.sql.SparkSession
 import org.apache.spark.sql.functions._
 import org.apache.spark.sql.types.DoubleType
