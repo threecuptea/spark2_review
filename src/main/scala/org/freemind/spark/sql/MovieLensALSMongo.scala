@@ -15,9 +15,9 @@ import org.apache.spark.sql.types.DoubleType
   *
   * To run it locally
   * $SPARK_HOME/bin/spark-submit --packages org.mongodb.spark:mongo-spark-connector_2.11:2.2.2 \
-  * --master local[*] --class org.freemind.spark.sql.MovieLensALSMongo target/scala-2.11/spark_tutorial_2_2.11-1.0.jar
+  * --master local[*] --class org.freemind.spark.sql.MovieLensALSMongo target/scala-2.11/spark2_review_2.11-0.1.jar
   *
-  * @author sling(threecuptea) wrote on 12/30/2016 - 2/4/2017 .
+  * @author sling(threecuptea) wrote on 2018-06-02 .
   */
 object MovieLensALSMongo {
 
@@ -61,6 +61,12 @@ object MovieLensALSMongo {
     val recommendDS = augModelFromALS.recommendForAllUsers(20).
       select($"userId", explode($"recommendations").as("recommend")).
       select($"userId", $"recommend".getField("movieId").as("movieId"), $"recommend".getField("rating").as("rating"))
+
+    val pUserId = 0
+    println(s"The top recommendation on AllUsers filter with  user ${pUserId} from ALS model")
+    recommendDS.filter($"userId" === pUserId).join(movieDS, recommendDS("movieId") === movieDS("id"), "inner").
+    select($"movieId", $"title", $"genres", $"userId", $"rating").show(false)
+
 
     MongoSpark.save(recommendDS.select($"userId", $"movieId", $"rating".cast(DoubleType)).
       write.mode("overwrite"), writeConfig)

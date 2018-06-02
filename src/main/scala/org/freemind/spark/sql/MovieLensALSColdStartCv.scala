@@ -60,7 +60,7 @@ object MovieLensALSColdStartCv {
       select($"userId", $"recommend".getField("movieId").as("movieId"), $"recommend".getField("rating").as("rating"))
 
     val pUserId = 0
-    println(s"The top recommendation on AllUsers filter with  user ${pUserId} from ALS model from CV")
+    println(s"The top recommendation on AllUsers filter with  user ${pUserId} from CV")
     recommendDS.filter($"userId" === pUserId).join(movieDS, recommendDS("movieId") === movieDS("id"), "inner").
       select($"movieId", $"title", $"genres", $"userId", $"rating").show(false)
 
