@@ -6,6 +6,9 @@ import org.apache.spark.sql.functions.{desc, explode, lit}
 
 
 /**
+  *
+  * $SPARK_HOME/bin/spark-submit --master local[*] --class org.freemind.spark.sql.MovieLensALSColdStart \
+  * target/scala-2.11/spark2_review_2.11-0.1.jar data/ml-1m/ratings.dat.gz data/ml-1m/personalRatings.txt data/ml-1m/movies.dat
   * There are a couple of new finding:
   *
   * 1. spark 2.3.0 optimize join and turn off 'spark.sql.crossJoin'.  I will get
@@ -66,30 +69,40 @@ object MovieLensALSColdStart {
     val pRatedDS = prDS.join(movieDS, prDS("movieId") === movieDS("id"), "inner").select($"id", $"title", $"genres").as[Movie]
     val pUnratedDS = movieDS.except(pRatedDS).withColumnRenamed("id", "movieId").withColumn("userId", lit(pUserId)) //matches with ALS required fields
 
-    println(s"The recommendation on unratedMovie for user ${pUserId} from ALS model")
+    println(s"The recommendation on unratedMovie for user=${pUserId} from ALS model")
     augModelFromALS.transform(pUnratedDS).sort(desc("prediction")).show(false)
 
     ///recommendation: org.apache.spark.sql.Dataset[org.apache.spark.sql.Row] = [userId: int, recommendations: array<struct<movieId:int,rating:float>>]
     //We explode to flat array then retrieve field from a struct
-    val recommendDS = augModelFromALS.recommendForAllUsers(20).
+    val recommendDS = augModelFromALS.recommendForAllUsers(25).
       select($"userId", explode($"recommendations").as("recommend")).
       select($"userId", $"recommend".getField("movieId").as("movieId"), $"recommend".getField("rating").as("rating")).cache()
 
-    println(s"The top recommendation on AllUsers filter with  user ${pUserId} from ALS model")
-    recommendDS.filter($"userId" === pUserId).join(movieDS, recommendDS("movieId") === movieDS("id")).
-      select($"movieId", $"title", $"genres", $"userId", $"rating").show(false)
+    val pUserRecommendDS = recommendDS.filter($"userId" === pUserId)
 
+    println(s"The top recommendation on AllUsers filter with user=${pUserId} from ALS model and exclude rated movies")
+    //Rename so that I can avoid the error that reference 'userId' is ambiguous, ' shorthand for column
+    val pUserRatedRecommendDS = pUserRecommendDS.join(prDS.select('movieId as "movieId_b"),
+      'movieId === 'movieId_b, "inner").select('userId, 'movieId, 'rating)
+    pUserRecommendDS.except(pUserRatedRecommendDS).join(movieDS, recommendDS("movieId") === movieDS("id"), "inner").
+      select($"movieId", $"title", $"genres", $"userId", $"rating").sort(desc("rating")).show(false)
 
+    println()
     val sUserId = 6001
     val sRatedDS = mrDS.filter($"userId" === sUserId).join(movieDS, mrDS("movieId") === movieDS("id"), "inner").select($"id", $"title", $"genres").as[Movie]
     val sUnratedDS = movieDS.except(sRatedDS).withColumnRenamed("id", "movieId").withColumn("userId", lit(sUserId))
 
-    println(s"The recommendation on unratedMovie for user ${sUserId} from ALS model")
+    println(s"The recommendation on unratedMovie for user=${sUserId} from ALS model")
     augModelFromALS.transform(sUnratedDS).sort(desc("prediction")).show(false)
 
-    println(s"The top recommendation on AllUsers filter with  user ${sUserId} from ALS model")
-    recommendDS.filter($"userId" === sUserId).join(movieDS, recommendDS("movieId") === movieDS("id")).
-      select($"movieId", $"title", $"genres", $"userId", $"rating").show(false)
+    val sUserRecommendDS = recommendDS.filter($"userId" === sUserId)
+
+    println(s"The top recommendation on AllUsers filter with  user=${sUserId} from ALS model and exclude rated movies")
+    val sUserRatedRecommendDS = sUserRecommendDS.join(mrDS.select('userId as "userId_b", 'movieId as "movieId_b"),
+      'userId === 'userId_b  && 'movieId === 'movieId_b, "inner").
+      select('userId, 'movieId, 'rating)
+    sUserRecommendDS.except(sUserRatedRecommendDS).join(movieDS, recommendDS("movieId") === movieDS("id"), "inner").
+      select($"movieId", $"title", $"genres", $"userId", $"rating").sort(desc("rating")).show(false)
 
     spark.stop()
   }
