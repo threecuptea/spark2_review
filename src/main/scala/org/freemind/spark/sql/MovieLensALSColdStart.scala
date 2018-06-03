@@ -25,6 +25,9 @@ import org.apache.spark.sql.functions.{desc, explode, lit}
   * It would recommend 1193: "One Flew Over the Cuckoo's Nest", 904: "Rear Window" to sUser = 6001 even though
   * sUser = 6001 has rated that.
   *
+  * I finally exclude those rated to make results from those two approaches the same same.
+  *
+  *
   * @author sling/ threecuptea rewrite, consolidate common methods into MovieLensCommon and clean-up 05/27/2018
   */
 object MovieLensALSColdStart {
@@ -81,7 +84,9 @@ object MovieLensALSColdStart {
     val pUserRecommendDS = recommendDS.filter($"userId" === pUserId)
 
     println(s"The top recommendation on AllUsers filter with user=${pUserId} from ALS model and exclude rated movies")
-    //Rename so that I can avoid the error that reference 'userId' is ambiguous, ' shorthand for column
+    //Rename so that I can avoid the error that reference 'userId' is ambiguous, ' shorthand for column.
+    //"movie_b" is not part of prDS.  Therefore, you cannot use psDS("movieId_b") to reference it.  However,
+    //you can directly reference "movieId_b"
     val pUserRatedRecommendDS = pUserRecommendDS.join(prDS.select('movieId as "movieId_b"),
       'movieId === 'movieId_b, "inner").select('userId, 'movieId, 'rating)
     pUserRecommendDS.except(pUserRatedRecommendDS).join(movieDS, 'movieId ==='id, "inner").

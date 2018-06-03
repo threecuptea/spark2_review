@@ -15,7 +15,7 @@ import org.apache.spark.sql.functions.{lit, udf, when}
   * 3. Save key values to Mongodb  OverlaysLookup collection of unified database so that I can create IdAuthResponse simulator.
   *
   * $SPARK_HOME/bin/spark-submit --master local[4] --packages org.mongodb.spark:mongo-spark-connector_2.11:2.2.2 \
-  * --class org.freemind.spark.sql.OverlaysProcessing target/scala-2.11/spark_tutorial_2_2.11-1.0.jar data/content_overlays
+  * --class org.freemind.spark.sql.OverlaysProcessing target/scala-2.11/spark_review_2.11-1.0.jar data/content_overlays
   *
   * @author sling/ threecuptea 05/26/2018
   */
