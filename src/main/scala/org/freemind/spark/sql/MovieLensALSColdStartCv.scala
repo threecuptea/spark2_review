@@ -47,8 +47,8 @@ object MovieLensALSColdStartCv {
 
     val bestModelFromCv = mlCommon.getBestCrossValidatorModel(als, mrDS)
 
-    //Array[ParamMap] zip Array[Double], get bestParamMap so that I can refit with allDS Dataset, sorted no need of augument, sortBy (one argument)
-    //sortWith (two arguments comparison, sortby reverse + (Ordering[Double].reverse), you can use - in sortBy, sortWith(_._2 > _._2)
+    //Array[ParamMap] zip Array[Double], get bestParamMap so that I can refit with allDS Dataset, sorted requires no augument, sortBy requires one argument)
+    //sortWith requires two arguments comparison, sortby reverse + (Ordering[Double].reverse), you can use _ in sortBy, sortWith(_._2 > _._2)
     val bestParamsFromCv = (bestModelFromCv.getEstimatorParamMaps zip bestModelFromCv.avgMetrics).minBy(_._2)._1
     println(s"The best model from CossValidator was trained with param = ${bestParamsFromCv}")
 

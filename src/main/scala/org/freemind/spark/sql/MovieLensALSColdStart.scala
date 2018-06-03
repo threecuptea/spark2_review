@@ -84,7 +84,7 @@ object MovieLensALSColdStart {
     //Rename so that I can avoid the error that reference 'userId' is ambiguous, ' shorthand for column
     val pUserRatedRecommendDS = pUserRecommendDS.join(prDS.select('movieId as "movieId_b"),
       'movieId === 'movieId_b, "inner").select('userId, 'movieId, 'rating)
-    pUserRecommendDS.except(pUserRatedRecommendDS).join(movieDS, recommendDS("movieId") === movieDS("id"), "inner").
+    pUserRecommendDS.except(pUserRatedRecommendDS).join(movieDS, 'movieId ==='id, "inner").
       select($"movieId", $"title", $"genres", $"userId", $"rating").sort(desc("rating")).show(false)
 
     println()
@@ -99,9 +99,8 @@ object MovieLensALSColdStart {
 
     println(s"The top recommendation on AllUsers filter with  user=${sUserId} from ALS model and exclude rated movies")
     val sUserRatedRecommendDS = sUserRecommendDS.join(mrDS.select('userId as "userId_b", 'movieId as "movieId_b"),
-      'userId === 'userId_b  && 'movieId === 'movieId_b, "inner").
-      select('userId, 'movieId, 'rating)
-    sUserRecommendDS.except(sUserRatedRecommendDS).join(movieDS, recommendDS("movieId") === movieDS("id"), "inner").
+      'userId === 'userId_b  && 'movieId === 'movieId_b, "inner").select('userId, 'movieId, 'rating)
+    sUserRecommendDS.except(sUserRatedRecommendDS).join(movieDS, 'movieId === 'id, "inner").
       select($"movieId", $"title", $"genres", $"userId", $"rating").sort(desc("rating")).show(false)
 
     spark.stop()
