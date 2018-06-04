@@ -23,8 +23,7 @@ object MovieLensALSCv {
     val prFile = args(1)
     val movieFile = args(2)
 
-    val spark = SparkSession.builder().appName("MovieLensALSCv").config("spark.sql.shuffle.partitions", 8).
-      getOrCreate()
+    val spark = SparkSession.builder().appName("MovieLensALSCv").getOrCreate()
     import spark.implicits._
 
     val mlCommon = new MovieLensCommon

@@ -14,8 +14,8 @@ import org.apache.spark.sql.types.DoubleType
   * mongoimport -d movielens -c movie_ratings --type csv -f userId,movieId,rating,timestamp data/ratings.csv
   *
   * To run it locally
-  * $SPARK_HOME/bin/spark-submit --packages org.mongodb.spark:mongo-spark-connector_2.11:2.2.2 \
-  * --master local[*] --class org.freemind.spark.sql.MovieLensALSMongo target/scala-2.11/spark2_review_2.11-0.1.jar
+  * $SPARK_HOME/bin/spark-submit --packages org.mongodb.spark:mongo-spark-connector_2.11:2.2.2 --master local[*] \
+  * --conf spark.sql.shuffle.partitions=8 --class org.freemind.spark.sql.MovieLensALSMongo target/scala-2.11/spark2_review_2.11-0.1.jar
   *
   * @author sling(threecuptea) wrote on 2018-06-02 .
   */
@@ -23,8 +23,7 @@ object MovieLensALSMongo {
 
   def main(args: Array[String]): Unit = {
 
-    val spark = SparkSession.builder().appName("MovieLensALSMongo").config("spark.sql.shuffle.partitions", 8).
-      getOrCreate()
+    val spark = SparkSession.builder().appName("MovieLensALSMongo").getOrCreate()
     import spark.implicits._
 
     val mrReadConfig = ReadConfig(Map("uri" -> "mongodb://localhost:27017/movielens.movie_ratings?readPreference=primaryPreferred"))

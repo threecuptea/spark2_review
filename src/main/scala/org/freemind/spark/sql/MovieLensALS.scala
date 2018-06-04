@@ -7,7 +7,7 @@ import org.apache.spark.sql.functions.{desc, explode, lit}
 
 /**
   *
-  * $SPARK_HOME/bin/spark-submit --master local[*] --class org.freemind.spark.sql.MovieLensALS \
+  * $SPARK_HOME/bin/spark-submit --master local[*] --conf spark.sql.shuffle.partitions=8 --class org.freemind.spark.sql.MovieLensALS \
   * target/scala-2.11/spark2_review_2.11-0.1.jar data/ml-1m/ratings.dat.gz data/ml-1m/personalRatings.txt data/ml-1m/movies.dat
   * There are a couple of new finding:
   *
@@ -42,8 +42,7 @@ object MovieLensALS {
     val prFile = args(1)
     val movieFile = args(2)
 
-    val spark = SparkSession.builder().appName("MovieLensALS").config("spark.sql.shuffle.partitions", 8).
-      getOrCreate()
+    val spark = SparkSession.builder().appName("MovieLensALS").getOrCreate()
     import spark.implicits._
 
     val mlCommon = new MovieLensCommon
