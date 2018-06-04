@@ -9,7 +9,7 @@ import org.apache.spark.sql.functions.explode
   * CrossValidator is for ML tuning.  However, it needs some work to get the best parameter map used by the
   * CrossValidatorModel
   *
-  * @author sling/ threecuptea rewrite, consolidate common methods into MovieLensCommon and clean-up 05/27/2018
+  * @author sling/ threecuptea consolidated common methods into MovieLensCommon and refactored on 05/27/2018
   */
 object MovieLensALSCv {
 

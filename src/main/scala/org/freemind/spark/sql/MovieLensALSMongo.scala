@@ -17,7 +17,7 @@ import org.apache.spark.sql.types.DoubleType
   * $SPARK_HOME/bin/spark-submit --packages org.mongodb.spark:mongo-spark-connector_2.11:2.2.2 --master local[*] \
   * --conf spark.sql.shuffle.partitions=8 --class org.freemind.spark.sql.MovieLensALSMongo target/scala-2.11/spark2_review_2.11-0.1.jar
   *
-  * @author sling(threecuptea) wrote on 2018-06-02 .
+  * @author sling/ threecuptea consolidated common methods into MovieLensCommon and refactored on 2018-06-02 .
   */
 object MovieLensALSMongo {
 

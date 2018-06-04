@@ -28,7 +28,7 @@ import org.apache.spark.sql.functions.{desc, explode, lit}
   * I finally exclude those rated to make results from those two approaches the same same.
   *
   *
-  * @author sling/ threecuptea rewrite, consolidate common methods into MovieLensCommon and clean-up 05/27/2018
+  * @author sling/ threecuptea consolidated common methods into MovieLensCommon and refactored on 05/27/2018
   */
 object MovieLensALS {
 
