@@ -42,7 +42,7 @@ object MovieLensALS {
     val prFile = args(1)
     val movieFile = args(2)
 
-    val spark = SparkSession.builder().appName("MovieLensALSColdStart").config("spark.sql.shuffle.partitions", 8).
+    val spark = SparkSession.builder().appName("MovieLensALS").config("spark.sql.shuffle.partitions", 8).
       getOrCreate()
     import spark.implicits._
 
