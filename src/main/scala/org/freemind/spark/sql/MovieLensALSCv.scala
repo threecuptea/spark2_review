@@ -11,11 +11,11 @@ import org.apache.spark.sql.functions.explode
   *
   * @author sling/ threecuptea rewrite, consolidate common methods into MovieLensCommon and clean-up 05/27/2018
   */
-object MovieLensALSColdStartCv {
+object MovieLensALSCv {
 
   def main(args: Array[String]): Unit = {
     if (args.length < 3) {
-      println("Usage: MovieLensALSColdStartCv [movie_ratings] [personal_ratings] [movies]")
+      println("Usage: MovieLensALSCv [movie_ratings] [personal_ratings] [movies]")
       System.exit(-1)
     }
 
@@ -23,8 +23,7 @@ object MovieLensALSColdStartCv {
     val prFile = args(1)
     val movieFile = args(2)
 
-    val spark = SparkSession.builder().appName("MovieLensALSColdStartCv").config("spark.sql.shuffle.partitions", 8).
-      //config("spark.sql.crossJoin.enabled", "true")
+    val spark = SparkSession.builder().appName("MovieLensALSCv").config("spark.sql.shuffle.partitions", 8).
       getOrCreate()
     import spark.implicits._
 

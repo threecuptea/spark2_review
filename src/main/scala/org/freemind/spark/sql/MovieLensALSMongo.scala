@@ -24,7 +24,6 @@ object MovieLensALSMongo {
   def main(args: Array[String]): Unit = {
 
     val spark = SparkSession.builder().appName("MovieLensALSMongo").config("spark.sql.shuffle.partitions", 8).
-      //config("spark.sql.crossJoin.enabled", "true")
       getOrCreate()
     import spark.implicits._
 

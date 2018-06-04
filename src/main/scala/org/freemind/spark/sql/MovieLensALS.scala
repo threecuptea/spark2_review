@@ -7,7 +7,7 @@ import org.apache.spark.sql.functions.{desc, explode, lit}
 
 /**
   *
-  * $SPARK_HOME/bin/spark-submit --master local[*] --class org.freemind.spark.sql.MovieLensALSColdStart \
+  * $SPARK_HOME/bin/spark-submit --master local[*] --class org.freemind.spark.sql.MovieLensALS \
   * target/scala-2.11/spark2_review_2.11-0.1.jar data/ml-1m/ratings.dat.gz data/ml-1m/personalRatings.txt data/ml-1m/movies.dat
   * There are a couple of new finding:
   *
@@ -30,11 +30,11 @@ import org.apache.spark.sql.functions.{desc, explode, lit}
   *
   * @author sling/ threecuptea rewrite, consolidate common methods into MovieLensCommon and clean-up 05/27/2018
   */
-object MovieLensALSColdStart {
+object MovieLensALS {
 
   def main(args: Array[String]): Unit = {
     if (args.length < 3) {
-      println("Usage: MovieLensALSColdStart [movie_ratings] [personal_ratings] [movies]")
+      println("Usage: MovieLensALS [movie_ratings] [personal_ratings] [movies]")
       System.exit(-1)
     }
 
@@ -43,7 +43,6 @@ object MovieLensALSColdStart {
     val movieFile = args(2)
 
     val spark = SparkSession.builder().appName("MovieLensALSColdStart").config("spark.sql.shuffle.partitions", 8).
-      //config("spark.sql.crossJoin.enabled", "true")
       getOrCreate()
     import spark.implicits._
 
