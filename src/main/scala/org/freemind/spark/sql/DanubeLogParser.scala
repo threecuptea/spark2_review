@@ -8,8 +8,8 @@ case class DanubeStates (
                           resource: String,
                           state: String,
                           pubId: Long,
-                          jtNo: Integer,
-                          jtYes: Integer
+                          jtNo: Int,
+                          jtYes: Int
                         )
 
 case class DanubeResolverRaw (
@@ -18,7 +18,7 @@ case class DanubeResolverRaw (
                                pubId: Long,
                                old_pubId: String,
                                state: String,
-                               dirty_size: Integer
+                               dirty_size: Int
                              )
 
 
@@ -60,7 +60,7 @@ class DanubeLogParser(a: Option[Array[String]] = None) extends Serializable {
   }
 
   def parseJtLog2(s: String): Option[DanubeStates] = {
-    val m: Matcher = nonjtPattern.matcher(s)
+    val m = jtPattern.matcher(s)
     if (m.find) {
       Some(DanubeStates(
         roviId = m.group(3).toLong,
@@ -77,7 +77,7 @@ class DanubeLogParser(a: Option[Array[String]] = None) extends Serializable {
   }
 
   def parseResolverRaw(s: String, jt: Boolean = false): Option[DanubeResolverRaw] = {
-    val m: Matcher = if (jt) jtDetailPattern.matcher(s) else nonJtDetailPattern.matcher(s)
+    val m = if (jt) jtDetailPattern.matcher(s) else nonJtDetailPattern.matcher(s)
     if (m.find) {
       Some(DanubeResolverRaw(
         resource = m.group(1),
@@ -86,7 +86,7 @@ class DanubeLogParser(a: Option[Array[String]] = None) extends Serializable {
         old_pubId = m.group(4),
         state = m.group(4) match {
           case "empty" => "new"
-          case _ =>   "update"
+          case _ => "update"
         },
         dirty_size = m.group(5).toInt
       ))

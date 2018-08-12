@@ -28,12 +28,15 @@ object DanubeStatesAnalysis2 {
     import spark.implicits._
 
     val parser = new DanubeLogParser()
+    val statesInc = Seq("PUBLISH", "UNPUBLISH")
 
-    val nonJtDs = spark.read.textFile(nonJtLog).flatMap(parser.parseNonJtLog2).filter($"pubId".between(nonJtLower, nonJtUpper)).cache()
+    val nonJtDs = spark.read.textFile(nonJtLog).map(parser.parseNonJtLog2).filter('pubId.between(nonJtLower, nonJtUpper))
+          .filter('state.isin(statesInc: _*)).cache()
     println(s"NON Java-transform DanubeState count = ${nonJtDs.count}")
     println()
 
-    val jtDs = spark.read.textFile(jtLog).flatMap(parser.parseJtLog2).filter($"pubId".between(jtLower, jtUpper)).cache()
+    val jtDs = spark.read.textFile(jtLog).map(parser.parseJtLog2).filter('pubId.between(jtLower, jtUpper))
+      .filter('state.isin(statesInc: _*)).cache()
     println(s"Java-transform DanubeState count = ${jtDs.count}")
     println()
 
@@ -50,7 +53,7 @@ object DanubeStatesAnalysis2 {
     combinedDs.groupBy($"resource", $"state").agg(sum($"jtNo"), sum($"jtYes")).show(500, false)
 
     println("Count groupBy PUBLISH_STATE and RESOURCE")
-    combinedDs.groupBy($"state", $"resource").agg(sum($"jtNo"), sum($"jtYes")).show(500, false)
+    combinedDs.groupBy('state, 'resource).agg(sum('jtNo), sum('jtYes)).show(500, false)
 
     spark.stop()
   }

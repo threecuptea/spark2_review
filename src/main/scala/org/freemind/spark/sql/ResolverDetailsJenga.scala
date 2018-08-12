@@ -30,22 +30,22 @@ object ResolverDetailsJenga {
       getOrCreate()
     import spark.implicits._
 
-    val nonJtDs = spark.read.textFile(nonJtLog).flatMap(parser.parseResolverRaw(_, false)).filter($"pubId".between(lower, upper))
-              .withColumnRenamed("dirty_size", "non_jt_dirty_size").cache()
+    val nonJtDs = spark.read.textFile(nonJtLog).map(parser.parseResolverRaw(_, false)).filter('pubId.between(lower, upper))
+        .withColumnRenamed("dirty_size", "non_jt_dirty_size").cache()
 
-    val jtDs = spark.read.textFile(jtLog).flatMap(parser.parseResolverRaw(_, true)).filter($"pubId".between(lower, upper))
+    val jtDs = spark.read.textFile(jtLog).map(parser.parseResolverRaw(_, true)).filter('pubId.between(lower, upper))
       .withColumnRenamed("dirty_size", "jt_dirty_size").cache()
 
     for (res <- resources) {
-      val joinedDs = nonJtDs.filter($"resource" === res).join(jtDs.filter($"resource" === res),
+      val joinedDS = nonJtDs.filter('resource === res).join(jtDs.filter('resource === res),
         Seq("pubId", "resource", "roviId", "old_pubId"), "inner")
 
-      joinedDs.withColumn("diff", $"jt_dirty_size" - $"non_jt_dirty_size").
-        withColumn("difference", format_string("%+,8d", $"diff")).
-        withColumn("abs_diff", abs($"diff")).
-        sort(desc("abs_diff")).
-        select($"resource", $"roviId", $"pubId", $"old_pubId", $"difference").
-        show(50, truncate=false)
+      joinedDS.withColumn("diff", 'jt_dirty_size - 'non_jt_dirty_size)
+          .withColumn("difference", format_string("%-,8d", 'diff))
+          .withColumn("abs_diff", abs('diff))
+          .sort(desc("abs_diff"))
+          .select('resource, 'roviId, 'pubId, 'old_pubId, 'non_jt_dirty_size, 'jt_dirty_size, 'difference)
+          .show(50, truncate=false)
     }
 
     spark.stop()
