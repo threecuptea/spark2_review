@@ -4,14 +4,16 @@ import org.apache.spark.ml.evaluation.RegressionEvaluator
 import org.apache.spark.ml.param.ParamMap
 import org.apache.spark.ml.recommendation.{ALS, ALSModel}
 import org.apache.spark.ml.tuning.{CrossValidator, CrossValidatorModel, ParamGridBuilder}
-import org.apache.spark.sql.{Dataset, SparkSession}
+import org.apache.spark.sql.{DataFrame, Dataset, SparkSession}
 import org.apache.spark.sql.functions._
+import org.apache.spark.sql.types._
+import org.apache.spark.storage.StorageLevel
 
 
-case class Rating(userId: Int, movieId: Int, rating: Float)
-case class Movie(id: Int, title: String, genres: Array[String])
+//case class Rating(userId: Int, movieId: Int, rating: Float)
+//case class Movie(id: Int, title: String, genres: Array[String])
 
-class MovieLensCommon(spark: SparkSession) extends Serializable {
+class MovieLensCommon2(spark: SparkSession) extends Serializable {
 
   import spark.implicits._
 
@@ -21,24 +23,23 @@ class MovieLensCommon(spark: SparkSession) extends Serializable {
   val prFile = s"${recommendBase}/personalRatings.csv"
   val movieFile = s"${recommendBase}/movies.csv"
 
-  def parseRating(line: String): Rating = {
-    val splits  = line.split("::")
-    assert(splits.length == 4)
+  val ratingsSchema = StructType(
+    StructField("userId", IntegerType, nullable = true) ::
+      StructField("movieId", IntegerType, nullable = true) ::
+      StructField("rating", FloatType, nullable = true) ::
+      StructField("ts", LongType, nullable = true) :: Nil
+  )
 
-    Rating(splits(0).toInt, splits(1).toInt, splits(2).toFloat)
-  }
+  val movieSchema = StructType(
+    StructField("id", IntegerType, nullable = true) ::
+      StructField("title", StringType, nullable = true) ::
+      StructField("genres", StringType, nullable = true) :: Nil
+  )
 
-  def parseMovie(line: String): Movie = {
-    val splits  = line.split("::")
-    assert(splits.length == 3)
-
-    Movie(splits(0).toInt, splits(1), splits(2).split('|'))
-  }
-
-  def getMovieLensDataset() = {
-    val mrDS = spark.read.option("header", true).csv(mrFile).map(r => Rating(r.getInt(0), r.getInt(1), r.getFloat(2))).cache()
-    val prDS = spark.read.csv(prFile).map(r => Rating(r.getInt(0), r.getInt(1), r.getFloat(2))).cache()
-    val movieDS = spark.read.option("header", true).csv(movieFile).map(r => Movie(r.getInt(0), r.getString(1), r.getString(2).split('|'))).cache()
+  def getMovieLensDataFrames() = {
+    val mrDS = spark.read.option("header", true).schema(ratingsSchema).csv(mrFile).select('userId, 'movieId, 'rating).persist(StorageLevel.MEMORY_ONLY_SER)
+    val prDS = spark.read.schema(ratingsSchema).csv(prFile).select('userId, 'movieId, 'rating).cache()
+    val movieDS = spark.read.option("header", true).schema(movieSchema).option("quote","\"").option("escape","\"").csv(movieFile).cache()
 
     (mrDS, prDS, movieDS)
   }
@@ -55,18 +56,18 @@ class MovieLensCommon(spark: SparkSession) extends Serializable {
       build()
   }
 
-  def getBaselineRmse(trainDS: Dataset[Rating], testDS: Dataset[Rating]): Double = {
+  def getBaselineRmse(trainDS: DataFrame, testDS: DataFrame): Double = {
     val avgRating = trainDS.select(mean("rating")).first().getDouble(0)
     val rmse = evaluator.evaluate(testDS.withColumn("prediction", lit(avgRating)))
     printf("The baseline rmse= %3.2f.\n", rmse)
     rmse
   }
 
-  def getBestParmMapFromALS(als: ALS, mrDS: Dataset[Rating]): ParamMap = {
+  def getBestParmMapFromALS(als: ALS, mrDS: DataFrame): ParamMap = {
     val Array(trainDS, valDS, testDS) = mrDS.randomSplit(Array(0.8, 0.1, 0.1))
-    trainDS.cache()
-    valDS.cache()
-    testDS.cache()
+    trainDS.persist(StorageLevel.MEMORY_ONLY_SER)
+    valDS.persist(StorageLevel.MEMORY_ONLY_SER)
+    testDS.persist(StorageLevel.MEMORY_ONLY_SER)
 
     var bestModel: Option[ALSModel] = None
     var bestParam: Option[ParamMap] = None
@@ -100,11 +101,11 @@ class MovieLensCommon(spark: SparkSession) extends Serializable {
     }
   }
 
-  def getBestCrossValidatorModel(als: ALS, mrDS: Dataset[Rating]): CrossValidatorModel = {
+  def getBestCrossValidatorModel(als: ALS, mrDS: DataFrame): CrossValidatorModel = {
     val Array(trainDS, valDS, testDS) = mrDS.randomSplit(Array(0.8, 0.1, 0.1))
-    trainDS.cache()
-    valDS.cache()
-    testDS.cache()
+    trainDS.persist(StorageLevel.MEMORY_ONLY_SER)
+    valDS.persist(StorageLevel.MEMORY_ONLY_SER)
+    testDS.persist(StorageLevel.MEMORY_ONLY_SER)
 
     val cv = new CrossValidator().setEstimator(als).setEstimatorParamMaps(getParamGrid(als)).setEvaluator(evaluator).setNumFolds(10)
     val cvModel = cv.fit(trainDS)

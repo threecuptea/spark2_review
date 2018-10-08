@@ -33,23 +33,13 @@ import org.apache.spark.sql.functions.{desc, explode, lit}
 object MovieLensALS {
 
   def main(args: Array[String]): Unit = {
-    if (args.length < 3) {
-      println("Usage: MovieLensALS [movie_ratings] [personal_ratings] [movies]")
-      System.exit(-1)
-    }
 
-    val mrFile = args(0)
-    val prFile = args(1)
-    val movieFile = args(2)
-
-    val spark = SparkSession.builder().appName("MovieLensALS").getOrCreate()
+    val spark = SparkSession.builder().appName("MovieLensALS").
+      config("spark.serializer", "org.apache.spark.serializer.KryoSerializer").getOrCreate()
     import spark.implicits._
 
-    val mlCommon = new MovieLensCommon
-
-    val mrDS = spark.read.textFile(mrFile).map(mlCommon.parseRating).cache()
-    val prDS = spark.read.textFile(prFile).map(mlCommon.parseRating).cache()
-    val movieDS = spark.read.textFile(movieFile).map(mlCommon.parseMovie).cache()
+    val mlCommon = new MovieLensCommon2(spark)
+    val (mrDS, prDS, movieDS) = mlCommon.getMovieLensDataFrames()
 
     mrDS.show(10, false)
     println(s"Rating Counts: movie - ${mrDS.count}, personal - ${prDS.count}")
@@ -67,7 +57,7 @@ object MovieLensALS {
     val augModelFromALS = als.fit(allDS, bestParmsFromALS)
 
     val pUserId = 0
-    val pRatedDS = prDS.join(movieDS, prDS("movieId") === movieDS("id"), "inner").select($"id", $"title", $"genres").as[Movie]
+    val pRatedDS = prDS.join(movieDS, prDS("movieId") === movieDS("id"), "inner").select($"id", $"title", $"genres")
     val pUnratedDS = movieDS.except(pRatedDS).withColumnRenamed("id", "movieId").withColumn("userId", lit(pUserId)) //matches with ALS required fields
 
     println(s"The recommendation on unratedMovie for user=${pUserId} from ALS model")
@@ -85,14 +75,14 @@ object MovieLensALS {
     //Rename so that I can avoid the error that reference 'userId' is ambiguous, ' shorthand for column.
     //"movie_b" is not part of prDS.  Therefore, you cannot use psDS("movieId_b") to reference it.  However,
     //you can directly reference "movieId_b"
-    val pUserRatedRecommendDS = pUserRecommendDS.join(prDS.select('movieId as "movieId_b"),
-      'movieId === 'movieId_b, "inner").select('userId, 'movieId, 'rating)
+    val pUserRatedRecommendDS = pUserRecommendDS.join(prDS.select('movieId),
+      Seq("movieId"), "inner").select('userId, 'movieId, 'rating)
     pUserRecommendDS.except(pUserRatedRecommendDS).join(movieDS, 'movieId ==='id, "inner").
       select($"movieId", $"title", $"genres", $"userId", $"rating").sort(desc("rating")).show(false)
 
     println()
     val sUserId = 6001
-    val sRatedDS = mrDS.filter($"userId" === sUserId).join(movieDS, mrDS("movieId") === movieDS("id"), "inner").select($"id", $"title", $"genres").as[Movie]
+    val sRatedDS = mrDS.filter($"userId" === sUserId).join(movieDS, mrDS("movieId") === movieDS("id"), "inner").select($"id", $"title", $"genres")
     val sUnratedDS = movieDS.except(sRatedDS).withColumnRenamed("id", "movieId").withColumn("userId", lit(sUserId))
 
     println(s"The recommendation on unratedMovie for user=${sUserId} from ALS model")
@@ -101,8 +91,8 @@ object MovieLensALS {
     val sUserRecommendDS = recommendDS.filter($"userId" === sUserId)
 
     println(s"The top recommendation on AllUsers filter with  user=${sUserId} from ALS model and exclude rated movies")
-    val sUserRatedRecommendDS = sUserRecommendDS.join(mrDS.select('userId as "userId_b", 'movieId as "movieId_b"),
-      'userId === 'userId_b  && 'movieId === 'movieId_b, "inner").select('userId, 'movieId, 'rating)
+    val sUserRatedRecommendDS = sUserRecommendDS.join(mrDS.select('userId, 'movieId),
+      Seq("userId", "movieId"), "inner").select('userId, 'movieId, 'rating)
     sUserRecommendDS.except(sUserRatedRecommendDS).join(movieDS, 'movieId === 'id, "inner").
       select($"movieId", $"title", $"genres", $"userId", $"rating").sort(desc("rating")).show(false)
 

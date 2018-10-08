@@ -46,7 +46,7 @@ object MovieLensALSMongo {
 
     val allDS = mrDS.union(prDS)
 
-    val mlCommon = new MovieLensCommon
+    val mlCommon = new MovieLensCommon(spark)
 
     //Need to match field names of rating, KEY POINT is coldStartStrategy = "drop": drop lines with 'prediction' = 'NaN'
     val als = new ALS().setMaxIter(20).setUserCol("userId").setItemCol("movieId").setRatingCol("rating").setColdStartStrategy("drop")

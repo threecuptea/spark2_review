@@ -14,23 +14,12 @@ import org.apache.spark.sql.functions.explode
 object MovieLensALSCv {
 
   def main(args: Array[String]): Unit = {
-    if (args.length < 3) {
-      println("Usage: MovieLensALSCv [movie_ratings] [personal_ratings] [movies]")
-      System.exit(-1)
-    }
-
-    val mrFile = args(0)
-    val prFile = args(1)
-    val movieFile = args(2)
 
     val spark = SparkSession.builder().appName("MovieLensALSCv").getOrCreate()
     import spark.implicits._
 
-    val mlCommon = new MovieLensCommon
-
-    val mrDS = spark.read.textFile(mrFile).map(mlCommon.parseRating).cache()
-    val prDS = spark.read.textFile(prFile).map(mlCommon.parseRating).cache()
-    val movieDS = spark.read.textFile(movieFile).map(mlCommon.parseMovie).cache()
+    val mlCommon = new MovieLensCommon(spark)
+    val (mrDS, prDS, movieDS) = mlCommon.getMovieLensDataset()
 
     mrDS.show(10, false)
     println(s"Rating Counts: movie - ${mrDS.count}, personal - ${prDS.count}")
