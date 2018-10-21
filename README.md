@@ -65,6 +65,10 @@
         I called the result augmented model.  Then I used augmented model to get recommendation for a test userId=6001.
         There are two approaches and both require join with movie partially.  Finally I stored 
         recommendForAllUsers of 25 movies to file in parquet format.  See the details in MovieLensALSEmr. 
+        
+      - Reference spark2_emr https://github.com/threecuptea/spark2_emr to see how I automate deployment to AWS EMR .  
+        and successfully finished ALS recommendation jobs on 26 million Movielens data in 15 minutes 
+        using limited AWS resoures
       
         
       
