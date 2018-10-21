@@ -252,7 +252,7 @@ object HousingSpark {
     0.007132552001144698, 0.005379025230251163, 0.3089598383060173, 0.054836496090242694, 0.10789750310754889,
     0.1065564500282175, 0.006052499578144016, 0.23744360585703922, 0.004638894234662272, 0.0019105200640549137, 0.0)
      */
-
+    //(Ordering[Double].reverse)
     val fns = housing_temp.schema.fieldNames
     val imp_features = ((fns.take(8) ++ fns.slice(14, 17) ++ op_cat_arr) zip imp_features_value).sortBy(_._2)(Ordering[Double].reverse)
 
