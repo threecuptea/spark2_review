@@ -14,7 +14,9 @@ import org.apache.spark.sql.expressions.Window
   *
   * Please add output directory 'output'
   *
-  * @author sling/ threecuptea 08/11, source one interview question
+  * Reference README_coding_challenge.md for input and output format
+  *
+  * @author sling/ threecuptea 08/11, interview question, refine on 10/27
   */
 object MovieRatingsRealCase {
 
@@ -51,16 +53,18 @@ object MovieRatingsRealCase {
     println(s"rating count before applying window rank: ${rawRatingDF.count()}")
 
     //Did not know rank is so useful.  It's since 1.4 from RDD, choose the latest
-    val w = Window.partitionBy('userId, 'movieId).orderBy(desc("ts"))
+    val w = Window.partitionBy('userId, 'movieId).orderBy('ts.desc)
     val ratingDF = rawRatingDF
-      .select('userId, 'movieId, 'rating, 'ts, rank.over(w).as("rank")).filter('rank === 1).cache()
+      .select('userId, 'movieId, first('rating).over(w).as("rating")).cache()
     println(s"rating count after applying window rank: ${ratingDF.count()}")
 
     val ratingGrouping = ratingDF.groupBy('movieId).agg(avg('rating).as("avg_rating"), count('userId).as("num_votes")).cache()
 
-    spark.read.schema(schemaMovie).option("header", true).option("quote","\"").option("escape","\"").csv(moviePath)
+    val outputDF = spark.read.schema(schemaMovie).option("header", true).option("quote","\"").option("escape","\"").csv(moviePath)
       .join(ratingGrouping, 'id === ratingGrouping("movieId"), "left_outer").select('id, 'runtime, 'title, 'avg_rating, 'num_votes)
-        .write.option("header", true).parquet(s"output/ratings-${System.currentTimeMillis()}")
+    outputDF.show(50, false)
+
+    outputDF.write.option("header", true).parquet(s"output/ratings-${System.currentTimeMillis()}")
 
     spark.stop()
   }

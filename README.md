@@ -42,6 +42,13 @@
         - Metadata may not always have the respective movie listed.
       - Reprocessing
         - Reprocessing of any specific days, i.e. We should be able to reprocess any one day's file with mini
+        
+      - Features include
+        - Take multiple files under recurvive folder into consideration and allow expandable folder structure
+        - de-duplicate rating (the same userId, movieId, rating and ts)
+        - Use WindowSpec and Window functions to only select the latest rating for the same userId and movieId
+        - groupBy agg and left_join
+        
           
    4. HousingSpark
       ml-spark-sklearn-tensor https://github.com/threecuptea/ml-spark-sklearn-tensor migrates a Scikit-Learn 
@@ -70,8 +77,17 @@
         and successfully finished ALS recommendation jobs on 26 million Movielens data in 15 minutes 
         using limited AWS resoures
       
-        
+   5. Add WindowFunctions 
+      Find two excellent articles introducing SQL Window function
+      https://databricks.com/blog/2015/07/15/introducing-window-functions-in-spark-sql.html   
+      https://alvinhenrick.com/2017/05/16/apache-spark-analytical-window-functions/
+      practice
       
+      - How to use window functions: rank, dense_rank, rwo_number, lead, lag, first, last
+      - How to list first n ranks in a window frame
+      - How to combine window function and row value, 
+        ex (the difference between highest revenue in window and revenue)
+      - How to change frame (row frame and range frame) of WindowSpec to correct window function 'last'  
       
       
    
