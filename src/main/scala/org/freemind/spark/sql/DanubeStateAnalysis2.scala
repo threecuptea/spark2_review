@@ -30,12 +30,12 @@ object DanubeStatesAnalysis2 {
     val parser = new DanubeLogParser()
     val statesInc = Seq("PUBLISH", "UNPUBLISH")
 
-    val nonJtDs = spark.read.textFile(nonJtLog).map(parser.parseNonJtLog2).filter('pubId.between(nonJtLower, nonJtUpper))
+    val nonJtDs = spark.read.textFile(nonJtLog).flatMap(parser.parseNonJtLog2).filter('pubId.between(nonJtLower, nonJtUpper))
           .filter('state.isin(statesInc: _*)).cache()
     println(s"NON Java-transform DanubeState count = ${nonJtDs.count}")
     println()
 
-    val jtDs = spark.read.textFile(jtLog).map(parser.parseJtLog2).filter('pubId.between(jtLower, jtUpper))
+    val jtDs = spark.read.textFile(jtLog).flatMap(parser.parseJtLog2).filter('pubId.between(jtLower, jtUpper))
       .filter('state.isin(statesInc: _*)).cache()
     println(s"Java-transform DanubeState count = ${jtDs.count}")
     println()

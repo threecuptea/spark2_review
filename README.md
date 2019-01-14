@@ -15,6 +15,8 @@
           
        b) ResolverDetailAnalysis joins Resolver log entries from non java-transform and java-transform environment
           It uses filter and join and format extensively. 
+          
+       c) Notice that flatMap will stripe Option wraper but map won't    
          
    2. OverlayProcessing 
       It covers both Content and Station Overlay processing of Tivo
@@ -45,7 +47,8 @@
         
       - Features include
         - Take multiple files under recurvive folder into consideration and allow expandable folder structure
-        - de-duplicate rating (the same userId, movieId, rating and ts)
+        - Have to de-duplicate rating (the same userId, movieId, rating and ts) first. Window functions won't help
+          de-duplicate.  It will select both if duplicate records are first in the Window.
         - Use WindowSpec and Window functions to only select the latest rating for the same userId and movieId
         - groupBy agg and left_join
         
@@ -53,31 +56,14 @@
    4. HousingSpark
       ml-spark-sklearn-tensor https://github.com/threecuptea/ml-spark-sklearn-tensor migrates a Scikit-Learn 
       (plus Panda, matplotlib and Numpy) project based upon California Housing data to Spark written in Jupyter 
-      Notebook.   This further refactors, streamline and modulize it into a standalone Spark application.
+      Notebook.   This further refactors, streamline and modularize it into a 
+      standalone Spark application.
       
-   5. MovieLensALS groups.
+   5. MovieLenALSMongo use Spark-ML ALS use MongoDB collections as both source and sink
    
-      MovieLensALS uses Spark-ML ALS (alternating least squares) algorithm directly.
+      I removed MovieLensALS and MovieLensALSCv to spark2_emr 
       
-      MovieLensALSCv uses Spark CrossValidator (dividing traing data into n fold and use one fold in term as 
-      validation data set and the rest as training data set) that use ALS as its estimator..
-      
-      MovieLenALSMongo use Spark-ML ALS use MongoDB collections as both source and sink.
-      
-      - MovieLensALS application is reading both rating and movie data set.  Split rating into training, validation 
-        and test data set. Apply ALS process: fit training set, transform validation data set and calculate RMSE. 
-        I used param grid of 6 (3 reg-params x 2 latent factors) to find the best parameters and model.
-        This means 6 full ALS cycles and each cycle running maxIter 20.  I apply the result to test data set to make 
-        sure the best model is not over-fitting or under-fitting.  Then I refit the best parameters to full rating set.       
-        I called the result augmented model.  Then I used augmented model to get recommendation for a test userId=6001.
-        There are two approaches and both require join with movie partially.  Finally I stored 
-        recommendForAllUsers of 25 movies to file in parquet format.  See the details in MovieLensALSEmr. 
-        
-      - Reference spark2_emr https://github.com/threecuptea/spark2_emr to see how I automate deployment to AWS EMR .  
-        and successfully finished ALS recommendation jobs on 26 million Movielens data in 15 minutes 
-        using limited AWS resoures
-      
-   5. Add WindowFunctions 
+   6. Add WindowFunctions 
       Find two excellent articles introducing SQL Window function
       https://databricks.com/blog/2015/07/15/introducing-window-functions-in-spark-sql.html   
       https://alvinhenrick.com/2017/05/16/apache-spark-analytical-window-functions/
@@ -87,7 +73,41 @@
       - How to list first n ranks in a window frame
       - How to combine window function and row value, 
         ex (the difference between highest revenue in window and revenue)
-      - How to change frame (row frame and range frame) of WindowSpec to correct window function 'last'  
+      - One suprise, sum (running total) will includes multiple rows with the same value.  The running total of the 
+        second to the last has include 1250 in the the last row.
+      
+            |7499 |ALLEN |SALESMAN |7698|20-Feb-81|1600|300 |30    |4450          |
+            |7844 |TURNER|SALESMAN |7698|8-Sep-81 |1500|0   |30    |5950          |
+            |7521 |WARD  |SALESMAN |7698|22-Feb-81|1250|500 |30    |8450          |
+            |7654 |MARTIN|SALESMAN |7698|28-Sep-81|1250|1400|30    |8450          |
+            +-----+------+---------+----+---------+----+----+------+--------------+
+  
+      - How to change frame (row frame and range frame) of WindowSpec to correct window function 'last'.  The default
+        window frame is range between unbounded preceding and current row.  It won't go beyond the current row. 
+        Therefore, the last alway select iteslf if we keep the default window frame.  Changing the Window frame as the
+        followings fix the issue.
+        
+            wsByDeptOrderBySal.rowsBetween(Window.currentRow, Window.unboundedFollowing) 
+          
+      - Try to implement id (row  number) with 3 options: 
+        a) using sql function monotonically_increasing_id()
+        b) using zipWithUniqueId of RDD
+        c) using zipWithIndex of RDD
+        
+        sql function monotonically_increasing_id() will generate incremental ids within a partition. However, ids won't 
+        be continuous if more than one partition is involved. It assume each partition has 8589934592 rows.  Ids 
+        in the second partition will be 8589934593, 8589934594 and so on.
+        
+        As its name imply, zipWithUniqueId will generate unique Ids but no guarantee to be continuous incremental.
+        
+        zipWithIndex always has correct implementation: continuous incremental Ids.  However, it has the most overhead.
+        It requires to start a new Spark job.  zipWithIndex is RDD function and requires conversion as the followings:
+        
+            val rddWithIdx = repartRdd.zipWithIndex().map {
+                case (r: Row, idx: Long) => Row.fromSeq((idx+1) +: r.toSeq)
+            }
+            spark.createDataFrame(rddWithIdx, StructType(StructField("id", LongType, false) +: empDF.schema.fields)).show(false)
+        
       
       
    

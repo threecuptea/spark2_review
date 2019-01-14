@@ -1,0 +1,98 @@
+The rating count before applying window rank: 3143
+
+The rating count after applying window rank: 3143
++------+-------+------------------------------+-----------------+---------+
+|id    |runtime|title                         |avg_rating       |num_votes|
++------+-------+------------------------------+-----------------+---------+
+|862   |81     |Toy Story                     |null             |null     |
+|8844  |104    |Jumanji                       |null             |null     |
+|15602 |101    |Grumpier Old Men              |null             |null     |
+|31357 |127    |Waiting to Exhale             |null             |null     |
+|11862 |106    |Father of the Bride Part II   |null             |null     |
+|949   |170    |Heat                          |null             |null     |
+|11860 |127    |Sabrina                       |null             |null     |
+|45325 |97     |Tom and Huck                  |null             |null     |
+|9091  |106    |Sudden Death                  |null             |null     |
+|710   |130    |GoldenEye                     |null             |null     |
+|9087  |106    |The American President        |null             |null     |
+|12110 |88     |Dracula: Dead and Loving It   |null             |null     |
+|21032 |78     |Balto                         |null             |null     |
+|10858 |192    |Nixon                         |null             |null     |
+|1408  |119    |Cutthroat Island              |4.0              |5        |
+|524   |178    |Casino                        |4.166666666666667|3        |
+|4584  |136    |Sense and Sensibility         |null             |null     |
+|5     |98     |Four Rooms                    |3.0              |3        |
+|9273  |90     |Ace Ventura: When Nature Calls|null             |null     |
+|11517 |103    |Money Train                   |null             |null     |
+|8012  |105    |Get Shorty                    |null             |null     |
+|1710  |124    |Copycat                       |null             |null     |
+|9691  |132    |Assassins                     |null             |null     |
+|12665 |111    |Powder                        |null             |null     |
+|451   |112    |Leaving Las Vegas             |null             |null     |
+|16420 |123    |Othello                       |null             |null     |
+|9263  |100    |Now and Then                  |null             |null     |
+|17015 |104    |Persuasion                    |null             |null     |
+|902   |108    |The City of Lost Children     |2.5              |2        |
+|37557 |108    |Shanghai Triad                |null             |null     |
+|9909  |99     |Dangerous Minds               |null             |null     |
+|63    |129    |Twelve Monkeys                |null             |null     |
+|78802 |50     |Wings of Courage              |null             |null     |
+|9598  |89     |Babe                          |null             |null     |
+|47018 |121    |Carrington                    |null             |null     |
+|687   |122    |Dead Man Walking              |null             |null     |
+|139405|51     |Across the Sea of Time        |null             |null     |
+|33689 |101    |It Takes Two                  |null             |null     |
+|9603  |97     |Clueless                      |null             |null     |
+|34615 |106    |Cry, the Beloved Country      |null             |null     |
+|31174 |104    |Richard III                   |null             |null     |
+|11443 |119    |Dead Presidents               |null             |null     |
+|35196 |117    |Restoration                   |null             |null     |
+|9312  |101    |Mortal Kombat                 |null             |null     |
+|577   |106    |To Die For                    |null             |null     |
+|11861 |116    |How To Make An American Quilt |null             |null     |
+|807   |127    |Se7en                         |null             |null     |
+|10530 |81     |Pocahontas                    |null             |null     |
+|8391  |96     |When Night Is Falling         |null             |null     |
+|629   |106    |The Usual Suspects            |null             |null     |
++------+-------+------------------------------+-----------------+---------+
+
+only showing top 50 rows
+
+2018-12-31 18:49:31 INFO  ParquetWriteSupport:54 - Initialized Parquet WriteSupport with Catalyst schema:
+{
+  "type" : "struct",
+  "fields" : [ {
+    "name" : "id",
+    "type" : "integer",
+    "nullable" : true,
+    "metadata" : { }
+  }, {
+    "name" : "runtime",
+    "type" : "integer",
+    "nullable" : true,
+    "metadata" : { }
+  }, {
+    "name" : "title",
+    "type" : "string",
+    "nullable" : true,
+    "metadata" : { }
+  }, {
+    "name" : "avg_rating",
+    "type" : "double",
+    "nullable" : true,
+    "metadata" : { }
+  }, {
+    "name" : "num_votes",
+    "type" : "long",
+    "nullable" : true,
+    "metadata" : { }
+  } ]
+}
+and corresponding Parquet message type:
+message spark_schema {
+  optional int32 id;
+  optional int32 runtime;
+  optional binary title (UTF8);
+  optional double avg_rating;
+  optional int64 num_votes;
+}

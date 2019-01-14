@@ -22,7 +22,7 @@ case class DanubeResolverRaw (
                              )
 
 
-class DanubeLogParser(a: Option[Array[String]] = None) extends Serializable {
+class DanubeLogParser(a: String*) extends Serializable {
 
   val nonJtLogRegEx = "\\[listener\\-\\d{1}\\] - (PUBLISH|NOPUBLISH|UNPUBLISH) (\\w+) (\\d+) \\((\\d+)\\)"
   val jtLogRegEx    = "\\[listener\\-\\d{1}\\] - (PUBLISH|NOPUBLISH|UNPUBLISH) (\\w+)\\-(\\d+) \\((\\d+)\\)"
@@ -30,7 +30,7 @@ class DanubeLogParser(a: Option[Array[String]] = None) extends Serializable {
   val nonjtPattern = Pattern.compile(nonJtLogRegEx)
   val jtPattern = Pattern.compile(jtLogRegEx)
 
-  def resourcesConcat = a.mkString("|")
+  def resourcesConcat = Array(a).mkString("|")
 
   def nonJtDetailPattern(): Pattern = {
     val regEx = s"RESOLVE (${resourcesConcat}) (\\d+) \\((\\d+) replacing (\\w+)\\) , (\\d+) dirty"

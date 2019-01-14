@@ -8,8 +8,8 @@ javacOptions ++= Seq("-source", "1.8")
 compileOrder := CompileOrder.JavaThenScala
 
 libraryDependencies ++= Seq(
-  "org.apache.spark" %% "spark-core" % "2.3.2" % "provided",
-  "org.apache.spark" %% "spark-sql"  % "2.3.2" % "provided",
-  "org.apache.spark" %% "spark-mllib"  % "2.3.2" % "provided",
-  "org.mongodb.spark" %% "mongo-spark-connector"  % "2.3.0" % "provided"
+  "org.apache.spark" %% "spark-core" % "2.4.0" % "provided",
+  "org.apache.spark" %% "spark-sql"  % "2.4.0" % "provided",
+  "org.apache.spark" %% "spark-mllib"  % "2.4.0" % "provided",
+  "org.mongodb.spark" %% "mongo-spark-connector"  % "2.4.0" % "provided"
 )

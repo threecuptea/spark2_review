@@ -1,0 +1,294 @@
+Display the best 2 products in each category
++----------+----------+-------+----+
+|product   |category  |revenue|rank|
++----------+----------+-------+----+
+|Thin      |Cell phone|6000   |1   |
+|Very Thin |Cell phone|6000   |1   |
+|Ultra Thin|Cell phone|5000   |2   |
+|Pro2      |Tablet    |6500   |1   |
+|Mini      |Tablet    |5500   |2   |
++----------+----------+-------+----+
+
+Display the difference between the revenue of each product and the revenue of the best-selling product in the same category as that product
++----------+----------+-------+------------+
+|product   |category  |revenue|revenue_diff|
++----------+----------+-------+------------+
+|Thin      |Cell phone|6000   |0           |
+|Very Thin |Cell phone|6000   |0           |
+|Ultra Thin|Cell phone|5000   |1000        |
+|Bendable  |Cell phone|3000   |3000        |
+|Foldable  |Cell phone|3000   |3000        |
+|Pro2      |Tablet    |6500   |0           |
+|Mini      |Tablet    |5500   |1000        |
+|Pro       |Tablet    |4500   |2000        |
+|Big       |Tablet    |2500   |4000        |
+|Normal    |Tablet    |1500   |5000        |
++----------+----------+-------+------------+
+
+Display id with employees using monotonically_increasing_id
++---+-----+------+---------+----+---------+----+----+------+
+|id |empno|ename |job      |mgr |hiredate |sal |comm|deptno|
++---+-----+------+---------+----+---------+----+----+------+
+|1  |7369 |SMITH |CLERK    |7902|17-Dec-80|800 |20  |10    |
+|2  |7499 |ALLEN |SALESMAN |7698|20-Feb-81|1600|300 |30    |
+|3  |7521 |WARD  |SALESMAN |7698|22-Feb-81|1250|500 |30    |
+|4  |7566 |JONES |MANAGER  |7839|2-Apr-81 |2975|0   |20    |
+|5  |7654 |MARTIN|SALESMAN |7698|28-Sep-81|1250|1400|30    |
+|6  |7698 |BLAKE |MANAGER  |7839|1-May-81 |2850|0   |30    |
+|7  |7782 |CLARK |MANAGER  |7839|9-Jun-81 |2450|0   |10    |
+|8  |7788 |SCOTT |ANALYST  |7566|19-Apr-87|3000|0   |20    |
+|9  |7839 |KING  |PRESIDENT|0   |17-Nov-81|5000|0   |10    |
+|10 |7844 |TURNER|SALESMAN |7698|8-Sep-81 |1500|0   |30    |
+|11 |7876 |ADAMS |CLERK    |7788|23-May-87|1100|0   |20    |
++---+-----+------+---------+----+---------+----+----+------+
+
+Display id with employees repartition(2) first before using monotonically_increasing_id
++----------+-----+------+---------+----+---------+----+----+------+
+|id        |empno|ename |job      |mgr |hiredate |sal |comm|deptno|
++----------+-----+------+---------+----+---------+----+----+------+
+|1         |7369 |SMITH |CLERK    |7902|17-Dec-80|800 |20  |10    |
+|2         |7566 |JONES |MANAGER  |7839|2-Apr-81 |2975|0   |20    |
+|3         |7698 |BLAKE |MANAGER  |7839|1-May-81 |2850|0   |30    |
+|4         |7788 |SCOTT |ANALYST  |7566|19-Apr-87|3000|0   |20    |
+|5         |7839 |KING  |PRESIDENT|0   |17-Nov-81|5000|0   |10    |
+|6         |7876 |ADAMS |CLERK    |7788|23-May-87|1100|0   |20    |
+|8589934593|7499 |ALLEN |SALESMAN |7698|20-Feb-81|1600|300 |30    |
+|8589934594|7521 |WARD  |SALESMAN |7698|22-Feb-81|1250|500 |30    |
+|8589934595|7654 |MARTIN|SALESMAN |7698|28-Sep-81|1250|1400|30    |
+|8589934596|7782 |CLARK |MANAGER  |7839|9-Jun-81 |2450|0   |10    |
+|8589934597|7844 |TURNER|SALESMAN |7698|8-Sep-81 |1500|0   |30    |
++----------+-----+------+---------+----+---------+----+----+------+
+
+
+Display id with employees using rdd.zipWithUniqueId
++---+-----+------+---------+----+---------+----+----+------+
+|id |empno|ename |job      |mgr |hiredate |sal |comm|deptno|
++---+-----+------+---------+----+---------+----+----+------+
+|1  |7369 |SMITH |CLERK    |7902|17-Dec-80|800 |20  |10    |
+|5  |7499 |ALLEN |SALESMAN |7698|20-Feb-81|1600|300 |30    |
+|2  |7521 |WARD  |SALESMAN |7698|22-Feb-81|1250|500 |30    |
+|6  |7566 |JONES |MANAGER  |7839|2-Apr-81 |2975|0   |20    |
+|10 |7654 |MARTIN|SALESMAN |7698|28-Sep-81|1250|1400|30    |
+|3  |7698 |BLAKE |MANAGER  |7839|1-May-81 |2850|0   |30    |
+|7  |7782 |CLARK |MANAGER  |7839|9-Jun-81 |2450|0   |10    |
+|11 |7788 |SCOTT |ANALYST  |7566|19-Apr-87|3000|0   |20    |
+|4  |7839 |KING  |PRESIDENT|0   |17-Nov-81|5000|0   |10    |
+|8  |7844 |TURNER|SALESMAN |7698|8-Sep-81 |1500|0   |30    |
+|12 |7876 |ADAMS |CLERK    |7788|23-May-87|1100|0   |20    |
++---+-----+------+---------+----+---------+----+----+------+
+
+Display id with employees repartition(2) first before using rdd.zipWithUniqueId
++---+-----+------+---------+----+---------+----+----+------+
+|id |empno|ename |job      |mgr |hiredate |sal |comm|deptno|
++---+-----+------+---------+----+---------+----+----+------+
+|1  |7369 |SMITH |CLERK    |7902|17-Dec-80|800 |20  |10    |
+|3  |7566 |JONES |MANAGER  |7839|2-Apr-81 |2975|0   |20    |
+|5  |7698 |BLAKE |MANAGER  |7839|1-May-81 |2850|0   |30    |
+|7  |7788 |SCOTT |ANALYST  |7566|19-Apr-87|3000|0   |20    |
+|9  |7839 |KING  |PRESIDENT|0   |17-Nov-81|5000|0   |10    |
+|11 |7876 |ADAMS |CLERK    |7788|23-May-87|1100|0   |20    |
+|2  |7499 |ALLEN |SALESMAN |7698|20-Feb-81|1600|300 |30    |
+|4  |7521 |WARD  |SALESMAN |7698|22-Feb-81|1250|500 |30    |
+|6  |7654 |MARTIN|SALESMAN |7698|28-Sep-81|1250|1400|30    |
+|8  |7782 |CLARK |MANAGER  |7839|9-Jun-81 |2450|0   |10    |
+|10 |7844 |TURNER|SALESMAN |7698|8-Sep-81 |1500|0   |30    |
++---+-----+------+---------+----+---------+----+----+------+
+
+
+Display id with employees using rdd.zipWithIndex
++---+-----+------+---------+----+---------+----+----+------+
+|id |empno|ename |job      |mgr |hiredate |sal |comm|deptno|
++---+-----+------+---------+----+---------+----+----+------+
+|1  |7369 |SMITH |CLERK    |7902|17-Dec-80|800 |20  |10    |
+|2  |7499 |ALLEN |SALESMAN |7698|20-Feb-81|1600|300 |30    |
+|3  |7521 |WARD  |SALESMAN |7698|22-Feb-81|1250|500 |30    |
+|4  |7566 |JONES |MANAGER  |7839|2-Apr-81 |2975|0   |20    |
+|5  |7654 |MARTIN|SALESMAN |7698|28-Sep-81|1250|1400|30    |
+|6  |7698 |BLAKE |MANAGER  |7839|1-May-81 |2850|0   |30    |
+|7  |7782 |CLARK |MANAGER  |7839|9-Jun-81 |2450|0   |10    |
+|8  |7788 |SCOTT |ANALYST  |7566|19-Apr-87|3000|0   |20    |
+|9  |7839 |KING  |PRESIDENT|0   |17-Nov-81|5000|0   |10    |
+|10 |7844 |TURNER|SALESMAN |7698|8-Sep-81 |1500|0   |30    |
+|11 |7876 |ADAMS |CLERK    |7788|23-May-87|1100|0   |20    |
++---+-----+------+---------+----+---------+----+----+------+
+
+Display id with employees repartition(2) first before using rdd.zipWithIndex
++---+-----+------+---------+----+---------+----+----+------+
+|id |empno|ename |job      |mgr |hiredate |sal |comm|deptno|
++---+-----+------+---------+----+---------+----+----+------+
+|1  |7369 |SMITH |CLERK    |7902|17-Dec-80|800 |20  |10    |
+|2  |7566 |JONES |MANAGER  |7839|2-Apr-81 |2975|0   |20    |
+|3  |7698 |BLAKE |MANAGER  |7839|1-May-81 |2850|0   |30    |
+|4  |7788 |SCOTT |ANALYST  |7566|19-Apr-87|3000|0   |20    |
+|5  |7839 |KING  |PRESIDENT|0   |17-Nov-81|5000|0   |10    |
+|6  |7876 |ADAMS |CLERK    |7788|23-May-87|1100|0   |20    |
+|7  |7499 |ALLEN |SALESMAN |7698|20-Feb-81|1600|300 |30    |
+|8  |7521 |WARD  |SALESMAN |7698|22-Feb-81|1250|500 |30    |
+|9  |7654 |MARTIN|SALESMAN |7698|28-Sep-81|1250|1400|30    |
+|10 |7782 |CLARK |MANAGER  |7839|9-Jun-81 |2450|0   |10    |
+|11 |7844 |TURNER|SALESMAN |7698|8-Sep-81 |1500|0   |30    |
++---+-----+------+---------+----+---------+----+----+------+
+
+
+Display employees with rank by Deptno and order by salary
++-----+------+---------+----+---------+----+----+------+----+
+|empno|ename |job      |mgr |hiredate |sal |comm|deptno|rank|
++-----+------+---------+----+---------+----+----+------+----+
+|7839 |KING  |PRESIDENT|0   |17-Nov-81|5000|0   |10    |1   |
+|7782 |CLARK |MANAGER  |7839|9-Jun-81 |2450|0   |10    |2   |
+|7369 |SMITH |CLERK    |7902|17-Dec-80|800 |20  |10    |3   |
+|7788 |SCOTT |ANALYST  |7566|19-Apr-87|3000|0   |20    |1   |
+|7566 |JONES |MANAGER  |7839|2-Apr-81 |2975|0   |20    |2   |
+|7876 |ADAMS |CLERK    |7788|23-May-87|1100|0   |20    |3   |
+|7698 |BLAKE |MANAGER  |7839|1-May-81 |2850|0   |30    |1   |
+|7499 |ALLEN |SALESMAN |7698|20-Feb-81|1600|300 |30    |2   |
+|7844 |TURNER|SALESMAN |7698|8-Sep-81 |1500|0   |30    |3   |
+|7521 |WARD  |SALESMAN |7698|22-Feb-81|1250|500 |30    |4   |
+|7654 |MARTIN|SALESMAN |7698|28-Sep-81|1250|1400|30    |4   |
++-----+------+---------+----+---------+----+----+------+----+
+
+Display employees with dense_rank by Deptno and order by salary
++-----+------+---------+----+---------+----+----+------+----------+
+|empno|ename |job      |mgr |hiredate |sal |comm|deptno|dense_rank|
++-----+------+---------+----+---------+----+----+------+----------+
+|7839 |KING  |PRESIDENT|0   |17-Nov-81|5000|0   |10    |1         |
+|7782 |CLARK |MANAGER  |7839|9-Jun-81 |2450|0   |10    |2         |
+|7369 |SMITH |CLERK    |7902|17-Dec-80|800 |20  |10    |3         |
+|7788 |SCOTT |ANALYST  |7566|19-Apr-87|3000|0   |20    |1         |
+|7566 |JONES |MANAGER  |7839|2-Apr-81 |2975|0   |20    |2         |
+|7876 |ADAMS |CLERK    |7788|23-May-87|1100|0   |20    |3         |
+|7698 |BLAKE |MANAGER  |7839|1-May-81 |2850|0   |30    |1         |
+|7499 |ALLEN |SALESMAN |7698|20-Feb-81|1600|300 |30    |2         |
+|7844 |TURNER|SALESMAN |7698|8-Sep-81 |1500|0   |30    |3         |
+|7521 |WARD  |SALESMAN |7698|22-Feb-81|1250|500 |30    |4         |
+|7654 |MARTIN|SALESMAN |7698|28-Sep-81|1250|1400|30    |4         |
++-----+------+---------+----+---------+----+----+------+----------+
+
+Display employees with row_numer by Deptno and order by salary
++-----+------+---------+----+---------+----+----+------+----------+
+|empno|ename |job      |mgr |hiredate |sal |comm|deptno|row_number|
++-----+------+---------+----+---------+----+----+------+----------+
+|7839 |KING  |PRESIDENT|0   |17-Nov-81|5000|0   |10    |1         |
+|7782 |CLARK |MANAGER  |7839|9-Jun-81 |2450|0   |10    |2         |
+|7369 |SMITH |CLERK    |7902|17-Dec-80|800 |20  |10    |3         |
+|7788 |SCOTT |ANALYST  |7566|19-Apr-87|3000|0   |20    |1         |
+|7566 |JONES |MANAGER  |7839|2-Apr-81 |2975|0   |20    |2         |
+|7876 |ADAMS |CLERK    |7788|23-May-87|1100|0   |20    |3         |
+|7698 |BLAKE |MANAGER  |7839|1-May-81 |2850|0   |30    |1         |
+|7499 |ALLEN |SALESMAN |7698|20-Feb-81|1600|300 |30    |2         |
+|7844 |TURNER|SALESMAN |7698|8-Sep-81 |1500|0   |30    |3         |
+|7521 |WARD  |SALESMAN |7698|22-Feb-81|1250|500 |30    |4         |
+|7654 |MARTIN|SALESMAN |7698|28-Sep-81|1250|1400|30    |5         |
++-----+------+---------+----+---------+----+----+------+----------+
+
+Display employees with running_total (salary)  by Deptno and order by salary.  Surprise!!! 8450 includes both 1250, the same value in the range.
++-----+------+---------+----+---------+----+----+------+--------------+
+|empno|ename |job      |mgr |hiredate |sal |comm|deptno|runnning_total|
++-----+------+---------+----+---------+----+----+------+--------------+
+|7839 |KING  |PRESIDENT|0   |17-Nov-81|5000|0   |10    |5000          |
+|7782 |CLARK |MANAGER  |7839|9-Jun-81 |2450|0   |10    |7450          |
+|7369 |SMITH |CLERK    |7902|17-Dec-80|800 |20  |10    |8250          |
+|7788 |SCOTT |ANALYST  |7566|19-Apr-87|3000|0   |20    |3000          |
+|7566 |JONES |MANAGER  |7839|2-Apr-81 |2975|0   |20    |5975          |
+|7876 |ADAMS |CLERK    |7788|23-May-87|1100|0   |20    |7075          |
+|7698 |BLAKE |MANAGER  |7839|1-May-81 |2850|0   |30    |2850          |
+|7499 |ALLEN |SALESMAN |7698|20-Feb-81|1600|300 |30    |4450          |
+|7844 |TURNER|SALESMAN |7698|8-Sep-81 |1500|0   |30    |5950          |
+|7521 |WARD  |SALESMAN |7698|22-Feb-81|1250|500 |30    |8450          |
+|7654 |MARTIN|SALESMAN |7698|28-Sep-81|1250|1400|30    |8450          |
++-----+------+---------+----+---------+----+----+------+--------------+
+
+Display employees with lead (next_row_vale)  by Deptno and order by salary
++-----+------+---------+----+---------+----+----+------+--------------+
+|empno|ename |job      |mgr |hiredate |sal |comm|deptno|next_row_value|
++-----+------+---------+----+---------+----+----+------+--------------+
+|7839 |KING  |PRESIDENT|0   |17-Nov-81|5000|0   |10    |2450          |
+|7782 |CLARK |MANAGER  |7839|9-Jun-81 |2450|0   |10    |800           |
+|7369 |SMITH |CLERK    |7902|17-Dec-80|800 |20  |10    |null          |
+|7788 |SCOTT |ANALYST  |7566|19-Apr-87|3000|0   |20    |2975          |
+|7566 |JONES |MANAGER  |7839|2-Apr-81 |2975|0   |20    |1100          |
+|7876 |ADAMS |CLERK    |7788|23-May-87|1100|0   |20    |null          |
+|7698 |BLAKE |MANAGER  |7839|1-May-81 |2850|0   |30    |1600          |
+|7499 |ALLEN |SALESMAN |7698|20-Feb-81|1600|300 |30    |1500          |
+|7844 |TURNER|SALESMAN |7698|8-Sep-81 |1500|0   |30    |1250          |
+|7521 |WARD  |SALESMAN |7698|22-Feb-81|1250|500 |30    |1250          |
+|7654 |MARTIN|SALESMAN |7698|28-Sep-81|1250|1400|30    |null          |
++-----+------+---------+----+---------+----+----+------+--------------+
+
+Display employees with lag (prev_row_vale)  by Deptno and order by salary
++-----+------+---------+----+---------+----+----+------+--------------+
+|empno|ename |job      |mgr |hiredate |sal |comm|deptno|prev_row_value|
++-----+------+---------+----+---------+----+----+------+--------------+
+|7839 |KING  |PRESIDENT|0   |17-Nov-81|5000|0   |10    |null          |
+|7782 |CLARK |MANAGER  |7839|9-Jun-81 |2450|0   |10    |5000          |
+|7369 |SMITH |CLERK    |7902|17-Dec-80|800 |20  |10    |2450          |
+|7788 |SCOTT |ANALYST  |7566|19-Apr-87|3000|0   |20    |null          |
+|7566 |JONES |MANAGER  |7839|2-Apr-81 |2975|0   |20    |3000          |
+|7876 |ADAMS |CLERK    |7788|23-May-87|1100|0   |20    |2975          |
+|7698 |BLAKE |MANAGER  |7839|1-May-81 |2850|0   |30    |null          |
+|7499 |ALLEN |SALESMAN |7698|20-Feb-81|1600|300 |30    |2850          |
+|7844 |TURNER|SALESMAN |7698|8-Sep-81 |1500|0   |30    |1600          |
+|7521 |WARD  |SALESMAN |7698|22-Feb-81|1250|500 |30    |1500          |
+|7654 |MARTIN|SALESMAN |7698|28-Sep-81|1250|1400|30    |1250          |
++-----+------+---------+----+---------+----+----+------+--------------+
+
+Display employees with first in partition by Deptno and order by salary
++-----+------+---------+----+---------+----+----+------+-----------+
+|empno|ename |job      |mgr |hiredate |sal |comm|deptno|first_value|
++-----+------+---------+----+---------+----+----+------+-----------+
+|7839 |KING  |PRESIDENT|0   |17-Nov-81|5000|0   |10    |5000       |
+|7782 |CLARK |MANAGER  |7839|9-Jun-81 |2450|0   |10    |5000       |
+|7369 |SMITH |CLERK    |7902|17-Dec-80|800 |20  |10    |5000       |
+|7788 |SCOTT |ANALYST  |7566|19-Apr-87|3000|0   |20    |3000       |
+|7566 |JONES |MANAGER  |7839|2-Apr-81 |2975|0   |20    |3000       |
+|7876 |ADAMS |CLERK    |7788|23-May-87|1100|0   |20    |3000       |
+|7698 |BLAKE |MANAGER  |7839|1-May-81 |2850|0   |30    |2850       |
+|7499 |ALLEN |SALESMAN |7698|20-Feb-81|1600|300 |30    |2850       |
+|7844 |TURNER|SALESMAN |7698|8-Sep-81 |1500|0   |30    |2850       |
+|7521 |WARD  |SALESMAN |7698|22-Feb-81|1250|500 |30    |2850       |
+|7654 |MARTIN|SALESMAN |7698|28-Sep-81|1250|1400|30    |2850       |
++
+-----+------+---------+----+---------+----+----+------+-----------+
+
+Display employees with last in partition by Deptno and order by salary w/o unbounded following. (The default window frame is range between unbounded preceding and current row)
++-----+------+---------+----+---------+----+----+------+----+
+|empno|ename |job      |mgr |hiredate |sal |comm|deptno|last|
++-----+------+---------+----+---------+----+----+------+----+
+|7839 |KING  |PRESIDENT|0   |17-Nov-81|5000|0   |10    |5000|
+|7782 |CLARK |MANAGER  |7839|9-Jun-81 |2450|0   |10    |2450|
+|7369 |SMITH |CLERK    |7902|17-Dec-80|800 |20  |10    |800 |
+|7788 |SCOTT |ANALYST  |7566|19-Apr-87|3000|0   |20    |3000|
+|7566 |JONES |MANAGER  |7839|2-Apr-81 |2975|0   |20    |2975|
+|7876 |ADAMS |CLERK    |7788|23-May-87|1100|0   |20    |1100|
+|7698 |BLAKE |MANAGER  |7839|1-May-81 |2850|0   |30    |2850|
+|7499 |ALLEN |SALESMAN |7698|20-Feb-81|1600|300 |30    |1600|
+|7844 |TURNER|SALESMAN |7698|8-Sep-81 |1500|0   |30    |1500|
+|7521 |WARD  |SALESMAN |7698|22-Feb-81|1250|500 |30    |1250|
+|7654 |MARTIN|SALESMAN |7698|28-Sep-81|1250|1400|30    |1250|
++-----+------+---------+----+---------+----+----+------+----+
+
+Display employees with last in partition by Deptno and order by salary with unbounded following
++-----+------+---------+----+---------+----+----+------+----+
+|empno|ename |job      |mgr |hiredate |sal |comm|deptno|last|
++-----+------+---------+----+---------+----+----+------+----+
+|7839 |KING  |PRESIDENT|0   |17-Nov-81|5000|0   |10    |800 |
+|7782 |CLARK |MANAGER  |7839|9-Jun-81 |2450|0   |10    |800 |
+|7369 |SMITH |CLERK    |7902|17-Dec-80|800 |20  |10    |800 |
+|7788 |SCOTT |ANALYST  |7566|19-Apr-87|3000|0   |20    |1100|
+|7566 |JONES |MANAGER  |7839|2-Apr-81 |2975|0   |20    |1100|
+|7876 |ADAMS |CLERK    |7788|23-May-87|1100|0   |20    |1100|
+|7698 |BLAKE |MANAGER  |7839|1-May-81 |2850|0   |30    |1250|
+|7499 |ALLEN |SALESMAN |7698|20-Feb-81|1600|300 |30    |1250|
+|7844 |TURNER|SALESMAN |7698|8-Sep-81 |1500|0   |30    |1250|
+|7521 |WARD  |SALESMAN |7698|22-Feb-81|1250|500 |30    |1250|
+|7654 |MARTIN|SALESMAN |7698|28-Sep-81|1250|1400|30    |1250|
++-----+------+---------+----+---------+----+----+------+----+
+
+
+
+
+
+
+
+
+

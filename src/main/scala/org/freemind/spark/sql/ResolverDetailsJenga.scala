@@ -24,16 +24,16 @@ object ResolverDetailsJenga {
 
     println(s"Request resources: ${resources.mkString(",")}")
 
-    val parser = new DanubeLogParser(Some(resources))
+    val parser = new DanubeLogParser(resources: _*)
 
     val spark = SparkSession.builder().appName("ResolverDetailsJenga").config("spark.sql.shuffle.partitions", 1).
       getOrCreate()
     import spark.implicits._
 
-    val nonJtDs = spark.read.textFile(nonJtLog).map(parser.parseResolverRaw(_, false)).filter('pubId.between(lower, upper))
+    val nonJtDs = spark.read.textFile(nonJtLog).flatMap(parser.parseResolverRaw(_, false)).filter('pubId.between(lower, upper))
         .withColumnRenamed("dirty_size", "non_jt_dirty_size").cache()
 
-    val jtDs = spark.read.textFile(jtLog).map(parser.parseResolverRaw(_, true)).filter('pubId.between(lower, upper))
+    val jtDs = spark.read.textFile(jtLog).flatMap(parser.parseResolverRaw(_, true)).filter('pubId.between(lower, upper))
       .withColumnRenamed("dirty_size", "jt_dirty_size").cache()
 
     for (res <- resources) {

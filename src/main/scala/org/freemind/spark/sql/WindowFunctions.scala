@@ -1,8 +1,9 @@
 package org.freemind.spark.sql
 
-import org.apache.spark.sql.SparkSession
+import org.apache.spark.sql.{Column, Row, SparkSession}
 import org.apache.spark.sql.expressions.Window
 import org.apache.spark.sql.functions._
+import org.apache.spark.sql.types.{LongType, StructField, StructType}
 
 /**
   *
@@ -12,7 +13,12 @@ import org.apache.spark.sql.functions._
   *
   * https://alvinhenrick.com/2017/05/16/apache-spark-analytical-window-functions/
   *
-  * @author sling/ threecuptea, 2018/10/27
+  * * Try 2.12.8 failed.  got Exception in thread "main" java.lang.BootstrapMethodError: java.lang.NoClassDefFoundError: scala/runtime/SymbolLiteral
+  * I have to revert to 2.11
+  *
+  * $SPARK_HOME/bin/spark-submit --master local[4] --class org.freemind.spark.sql.WindowFunctions target/scala-2.11/spark2_review_2.11-0.1.jar
+  *
+  * @author sling/ threecuptea, 2018/10/27, 2018/12/30 (re-practice)
   */
 object WindowFunctions {
 
@@ -34,15 +40,16 @@ object WindowFunctions {
       ("Pro2", "Tablet", 6500)
     )).toDF("product", "category", "revenue")
 
-    val windowSpec1 = Window.partitionBy("category").orderBy(desc("revenue"))
+    val wsByCategoryOrderByRevenue = Window.partitionBy('category).orderBy('revenue.desc)
 
-    //the best selling 2 product in a category
-    productDF.select('product, 'category, 'revenue, dense_rank.over(windowSpec1).as("rank")).filter('rank <= 2).show(false)
+    //the best selling 2 product in a category,
+    //Rank is our regular way.  Dense_rank leaves no gaps in ranking sequence when there are ties, 1,2,2,2, 3 insteadof 1,2,2,2,5
+    println("Display the best 2 products in each category")
+    productDF.select('*, dense_rank().over(wsByCategoryOrderByRevenue).as("rank")).filter('rank <= 2).show(false)
     //What is the difference between the revenue of each product and the revenue of the best-selling product in the same category of that product
-    val revenue_diff = first('revenue).over(windowSpec1) - 'revenue
-
-    productDF.select('product, 'category, 'revenue, revenue_diff.as("revenue_diff")).show(false)
-
+    val revenueDiff: Column = first('revenue).over(wsByCategoryOrderByRevenue) - 'revenue
+    println("Display the difference between the revenue of each product and the revenue of the best-selling product in the same category as that product")
+    productDF.select('*, revenueDiff.as("revenue_diff")).show(false)
 
     val empDF = spark.createDataFrame(Seq(
       (7369, "SMITH", "CLERK", 7902, "17-Dec-80", 800, 20, 10),
@@ -58,28 +65,57 @@ object WindowFunctions {
       (7876, "ADAMS", "CLERK", 7788, "23-May-87", 1100, 0, 20)
     )).toDF("empno", "ename", "job", "mgr", "hiredate", "sal", "comm", "deptno")
 
-    //I cannot change frame here, otherwise error occured in rank
-    val partitionWindow = Window.partitionBy('deptno).orderBy('sal.desc)
+    val wsByDeptOrderBySal = Window.partitionBy('deptno).orderBy('sal.desc)
+
+    println("Display id with employees repartition(2) first before using monotonically_increasing_id")
+    val repartRdd = empDF.rdd.repartition(2)
+    spark.createDataFrame(repartRdd, empDF.schema).select((monotonically_increasing_id() + 1).as("id"), '*).show(false)
+    //The result is (Row, Long)
+    val rddWithId = repartRdd.zipWithUniqueId().map {
+      //+: prepend and :+ append.  An element will be added to the + side is located
+      case (r: Row, id: Long) => Row.fromSeq((id+1) +: r.toSeq)
+    }
+    println("Display id with employees repartition(2) first before using rdd.zipWithUniqueId")
+    spark.createDataFrame(rddWithId, StructType(StructField("id", LongType, false) +: empDF.schema.fields)).show(false)
+    //The result is (Row, Long)
+    val rddWithIdx = repartRdd.zipWithIndex().map {
+      case (r: Row, idx: Long) => Row.fromSeq((idx+1) +: r.toSeq)
+    }
+    println("Display id with employees repartition(2) first before using rdd.zipWithIndex")
+    spark.createDataFrame(rddWithIdx, StructType(StructField("id", LongType, false) +: empDF.schema.fields)).show(false)
 
     //rank
-    empDF.select('*, rank.over(partitionWindow).as("rank")).show(false)
+    println("Display employees with rank by Deptno and order by salary")
+    empDF.select('*, rank().over(wsByDeptOrderBySal).as("rank")).show(false)
     //dense_rank
-    empDF.select('*, dense_rank.over(partitionWindow).as("dense_rank")).show(false)
-    //dense_rank
-    empDF.select('*, row_number.over(partitionWindow).as("row_number")).show(false)
-    //lead, display the next in the sequence
-    empDF.select('*, lead('sal, 1, null).over(partitionWindow).as("lead")).show(false)
-    //lag
-    empDF.select('*, lag('sal, 1, null).over(partitionWindow).as("lag")).show(false)
+    println("Display employees with dense_rank by Deptno and order by salary")
+    empDF.select('*, dense_rank().over(wsByDeptOrderBySal).as("dense_rank")).show(false)
+    //row_number
+    println("Display employees with row_numer by Deptno and order by salary")
+    empDF.select('*, row_number().over(wsByDeptOrderBySal).as("row_number")).show(false)
+    //running_total, the same value in range will be included???
+    println("Display employees with running_total (salary)  by Deptno and order by salary. Surprise!!!")
+    empDF.select('*, sum('sal).over(wsByDeptOrderBySal).as("runnning_total")).show(false)
+    //lead, the following row, returns the value that is offset rows after the current row
+    println("Display employees with lead (next_row_vale)  by Deptno and order by salary")
+    empDF.select('*, lead('sal, 1, null).over(wsByDeptOrderBySal).as("next_row_value")).show(false)
+    //lag, the preceding row, returns the value that is offset rows before the current row
+    println("Display employees with lag (prev_row_vale)  by Deptno and order by salary")
+    empDF.select('*, lag('sal, 1, null).over(wsByDeptOrderBySal).as("prev_row_value")).show(false)
     //first
-    empDF.select('*, first('sal).over(partitionWindow).as("first_val")).show(false)
-
-    //This happens because default window frame is range between unbounded preceding and current row,
-    //so the last_value() never looks beyond current row unless I change the frame.
-    //If I don't change row frame, last_val will display itself
-    val partitionWindowWithUnbound = Window.partitionBy('deptno).orderBy('sal.desc).rowsBetween(Window.currentRow, Window.unboundedFollowing)
+    println("Display employees with first in partition by Deptno and order by salary")
+    empDF.select('*, first('sal).over(wsByDeptOrderBySal).as("first_value")).show(false)
     //last
-    empDF.select('*, last('sal).over(partitionWindowWithUnbound).as("last_val")).show(false)
+    println("Display employees with last in partition by Deptno and order by salary w/o unbounded following. (The default window frame is range between unbounded preceding and current row)")
+    empDF.select('*, last('sal).over(wsByDeptOrderBySal).as("last")).show(false)
+    //We get unexpected result last := sal
+    //This happens because the default window frame is range between unbounded preceding and current row,
+    //It does not include any row beyond the current row. I tried unbounded on both ends and does not work
+    val wsByDeptOrderBySalUnbounded = wsByDeptOrderBySal.rowsBetween(Window.currentRow, Window.unboundedFollowing)
+    println("Display employees with last in partition by Deptno and order by salary with unbounded following")
+    empDF.select('*, last('sal).over(wsByDeptOrderBySalUnbounded).as("last")).show(false)
+
+    spark.stop()
 
 
 
