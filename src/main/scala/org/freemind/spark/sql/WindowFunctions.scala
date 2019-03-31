@@ -97,23 +97,23 @@ object WindowFunctions {
     println("Display employees with running_total (salary)  by Deptno and order by salary. Surprise!!!")
     empDF.select('*, sum('sal).over(wsByDeptOrderBySal).as("runnning_total")).show(false)
     //lead, the following row, returns the value that is offset rows after the current row
-    println("Display employees with lead (next_row_vale)  by Deptno and order by salary")
+    println("Display employees with lead (next_row_value)  by Deptno and order by salary")
     empDF.select('*, lead('sal, 1, null).over(wsByDeptOrderBySal).as("next_row_value")).show(false)
     //lag, the preceding row, returns the value that is offset rows before the current row
-    println("Display employees with lag (prev_row_vale)  by Deptno and order by salary")
+    println("Display employees with lag (prev_row_value)  by Deptno and order by salary")
     empDF.select('*, lag('sal, 1, null).over(wsByDeptOrderBySal).as("prev_row_value")).show(false)
     //first
     println("Display employees with first in partition by Deptno and order by salary")
     empDF.select('*, first('sal).over(wsByDeptOrderBySal).as("first_value")).show(false)
     //last
     println("Display employees with last in partition by Deptno and order by salary w/o unbounded following. (The default window frame is range between unbounded preceding and current row)")
-    empDF.select('*, last('sal).over(wsByDeptOrderBySal).as("last")).show(false)
+    empDF.select('*, last('sal).over(wsByDeptOrderBySal).as("last_value")).show(false)
     //We get unexpected result last := sal
     //This happens because the default window frame is range between unbounded preceding and current row,
     //It does not include any row beyond the current row. I tried unbounded on both ends and does not work
     val wsByDeptOrderBySalUnbounded = wsByDeptOrderBySal.rowsBetween(Window.currentRow, Window.unboundedFollowing)
     println("Display employees with last in partition by Deptno and order by salary with unbounded following")
-    empDF.select('*, last('sal).over(wsByDeptOrderBySalUnbounded).as("last")).show(false)
+    empDF.select('*, last('sal).over(wsByDeptOrderBySalUnbounded).as("last_value")).show(false)
 
     spark.stop()
 

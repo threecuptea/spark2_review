@@ -61,7 +61,7 @@ object MovieRatingsRealCase {
     val ratingGrouping = ratingDF.groupBy('movieId).agg(avg('rating).as("avg_rating"), count('userId).as("num_votes")).cache()
 
     val outputDF = spark.read.schema(schemaMovie).option("header", true).option("quote","\"").option("escape","\"").csv(moviePath)
-      .join(ratingGrouping, 'id === ratingGrouping("movieId"), "left_outer").select('id, 'runtime, 'title, 'avg_rating, 'num_votes)
+      .join(ratingGrouping, 'id === ratingGrouping("movieId"), "left_outer").select('id, 'title, 'runtime, 'avg_rating, 'num_votes)
     outputDF.show(50, false)
 
     outputDF.write.option("header", true).parquet(s"output/ratings-${System.currentTimeMillis()}")
